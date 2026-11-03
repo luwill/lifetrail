@@ -6,14 +6,14 @@ set -euo pipefail
 DEST=${1:?usage: new_project.sh <dest-dir>}
 SKILL=${0:A:h:h}
 if [[ -e "$DEST" && -n "$(ls -A "$DEST" 2>/dev/null)" ]]; then
-  if [[ -f "$DEST/.ltv_incomplete" ]]; then
+  if [[ -f "$DEST/.lifetrail_incomplete" ]]; then
     echo "继续未完成的项目：$DEST"
   else
     echo "目标目录非空：$DEST"; exit 1
   fi
 fi
 mkdir -p "$DEST" && DEST=${DEST:A}
-touch "$DEST/.ltv_incomplete"   # 完成标记：最后一次 git 提交成功后才删除
+touch "$DEST/.lifetrail_incomplete"   # 完成标记：最后一次 git 提交成功后才删除
 trap '(( ZSH_SUBSHELL == 0 )) && echo "生成中断：$DEST 已保留。处理上面的错误后重新运行同一条命令即可继续。" >&2' ZERR
 cp -R "$SKILL/template/." "$DEST/"
 find "$DEST" \( -name __pycache__ -o -name .pytest_cache \) -prune -exec rm -rf {} +   # 只清理 DEST 内的缓存
@@ -28,11 +28,11 @@ zsh "$SKILL/scripts/setup_terrain.sh" "$DEST"
   if git rev-parse -q --verify HEAD >/dev/null && git diff --cached --quiet; then
     echo "初始提交已存在"   # 上次在删除标记前中断
   elif [[ -z "$(git config user.email || true)" || -z "$(git config user.name || true)" ]]; then
-    echo "未配置 git user.name/user.email：用 life-trajectory-video <ltv@localhost> 提交"
-    git -c user.name=life-trajectory-video -c user.email=ltv@localhost commit -qm "chore: start from life-trajectory-video template"
+    echo "未配置 git user.name/user.email：用 lifetrail <lifetrail@localhost> 提交"
+    git -c user.name=lifetrail -c user.email=lifetrail@localhost commit -qm "chore: start from lifetrail template"
   else
-    git commit -qm "chore: start from life-trajectory-video template"
+    git commit -qm "chore: start from lifetrail template"
   fi
 )
-rm -f "$DEST/.ltv_incomplete"
+rm -f "$DEST/.lifetrail_incomplete"
 echo "项目已生成：$DEST"

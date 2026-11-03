@@ -6,5 +6,5 @@ narration/*/audio/
 __pycache__/
 .pytest_cache/
 .DS_Store
-.ltv_incomplete
+.lifetrail_incomplete
 data/_build/cache/

@@ -1,4 +1,4 @@
-# life-trajectory-video
+# lifetrail
 
 一个 [Claude Code](https://claude.com/claude-code) skill：给一位**主要活动在中国**的历史人物做一部“人生轨迹”视频。
 
@@ -17,7 +17,7 @@
 ## 安装
 
 ```bash
-git clone https://github.com/luwill/life-trajectory-video ~/.claude/skills/life-trajectory-video
+git clone https://github.com/luwill/lifetrail ~/.claude/skills/lifetrail
 ```
 
 然后在 Claude Code 里说“给某某做一部人生轨迹视频”即可触发。
@@ -28,13 +28,13 @@ git clone https://github.com/luwill/life-trajectory-video ~/.claude/skills/life-
 |---|---|
 | 命令行 | Node.js、Python 3、ffmpeg / ffprobe、curl、git、zsh |
 | Python 包 | numpy、scipy、Pillow、edge-tts、pytest |
-| 浏览器 | Playwright 的 Chromium（`npx playwright install chromium`，也可以用环境变量 `LTV_CHROME` 指定路径） |
+| 浏览器 | Playwright 的 Chromium（`npx playwright install chromium`，也可以用环境变量 `LIFETRAIL_CHROME` 指定路径） |
 
 新建项目时 `scripts/new_project.sh` 会做环境检查，一次列出所有缺失项。
 
 ### 地形缓存
 
-第一次运行时会下载高程和卫星影像，生成共享地形缓存 `~/.cache/life-trajectory-video/terrain/`，大约需要 30–60 分钟，之后所有项目共用。如果手上已有生成好的地形目录，设置 `LTV_TERRAIN_SEED=<目录>` 即可直接复制，跳过下载。
+第一次运行时会下载高程和卫星影像，生成共享地形缓存 `~/.cache/lifetrail/terrain/`，大约需要 30–60 分钟，之后所有项目共用。如果手上已有生成好的地形目录，设置 `LIFETRAIL_TERRAIN_SEED=<目录>` 即可直接复制，跳过下载。
 
 ## 目录
 

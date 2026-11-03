@@ -1,9 +1,9 @@
 ---
-name: life-trajectory-video
+name: lifetrail
 description: 给一位主要活动在中国的历史人物做“人生轨迹/生平行迹视频”：从生到死半年一步，在 3D 卫星地形上走一遍一生，标注古今地名，里程碑推镜高亮，分人生阶段配乐，配音旁白与字幕，输出 1080p mp4。触发：“给某某做人生轨迹视频”“生平行迹视频”“半年一步”“在3D地形上走一遍一生”“生平地图动画”。生年在公元前的人物（如孔子）暂不支持，载入后会说明原因。不适用：主要活动在中国以外的人物（如拿破仑、空海）；只要文字年表或生平简介；只要一张静态地图；不需要视频成片的需求。
 ---
 
-# 人生轨迹视频（life-trajectory-video）
+# 人生轨迹视频（lifetrail）
 
 本 skill 自带完整项目模板（`template/`：three.js 引擎、工具、测试、配乐生成器）和两个脚本（`scripts/`）。代码以 skill 为准，不要改模板本身；改动只发生在生成出来的工作目录里。
 
@@ -76,10 +76,10 @@ python3 -c "import json,sys;w=sys.argv[1];S=json.load(open(f'data/{w}/steps.json
 ### 阶段 1 建目录
 
 ```
-zsh ~/.claude/skills/life-trajectory-video/scripts/new_project.sh ./<who>-trajectory
+zsh ~/.claude/skills/lifetrail/scripts/new_project.sh ./<who>-trajectory
 ```
 
-默认目录 `./<who>-trajectory/`，位于当前已受信任的 cwd 之下（子代理要在这里干活，见 pitfalls）。建好后立即写 `docs/runs/<日期>-<who>.md`，先填“开工决定”。首次运行会准备共享地形缓存 `~/.cache/life-trajectory-video/terrain/`（有种子就复制，否则下载生成约 30–60 分钟），项目里的 `assets/terrain` 是指向它的符号链接。单独补跑地形：`zsh ~/.claude/skills/life-trajectory-video/scripts/setup_terrain.sh <dir>`。环境复查：`python3 tools/check_env.py`。此时还没有人物数据和时间轴，页面能否加载留到阶段 4 用 `node tools/smoke.mjs <who>` 验证。
+默认目录 `./<who>-trajectory/`，位于当前已受信任的 cwd 之下（子代理要在这里干活，见 pitfalls）。建好后立即写 `docs/runs/<日期>-<who>.md`，先填“开工决定”。首次运行会准备共享地形缓存 `~/.cache/lifetrail/terrain/`（有种子就复制，否则下载生成约 30–60 分钟），项目里的 `assets/terrain` 是指向它的符号链接。单独补跑地形：`zsh ~/.claude/skills/lifetrail/scripts/setup_terrain.sh <dir>`。环境复查：`python3 tools/check_env.py`。此时还没有人物数据和时间轴，页面能否加载留到阶段 4 用 `node tools/smoke.mjs <who>` 验证。
 
 ### 阶段 2 史料研究
 
@@ -109,7 +109,7 @@ python3 -m pytest -q tests/test_data.py tests/test_person.py -k <who>
 判定：地图框内、四块默认层之外的地点，凡是**里程碑地点**或**有 ≥4 个半年步停留**（作为半年终点），就要补层。下面的命令按 `LAYER_TABLE` 列出这些地点：
 
 ```
-python3 -c "import json,re,os,sys,collections as C;w=sys.argv[1];T=open(os.path.expanduser('~/.claude/skills/life-trajectory-video/scripts/setup_terrain.sh')).read();H=[list(map(float,r.split()[1:5])) for r in re.search(r\"LAYER_TABLE='(.*?)'\",T,re.S)[1].splitlines() if r.split()[0] in('zhuge_hi','hi_north','hi_east','hi_south')];S=json.load(open(f'data/{w}/steps.json'))['steps'];P=json.load(open(f'data/{w}/places.json'));n=C.Counter(s['places'][-1] for s in S);ms={s['milestone'].get('place',s['places'][-1]) for s in S if s.get('milestone')};inbox=lambda p:72<=p['lon']<=146 and 16<=p['lat']<=54;cov=lambda p:any(a<=p['lon']<=b and c<=p['lat']<=d for a,b,c,d in H);o=sorted(k for k in set(n)|ms if inbox(P[k]) and not cov(P[k]) and (k in ms or n[k]>=4));[print(k,P[k]['name'],P[k]['lon'],P[k]['lat'],'里程碑' if k in ms else '',n[k]) for k in o];print(len(o),'places outside shared hi-res layers')" <who>
+python3 -c "import json,re,os,sys,collections as C;w=sys.argv[1];T=open(os.path.expanduser('~/.claude/skills/lifetrail/scripts/setup_terrain.sh')).read();H=[list(map(float,r.split()[1:5])) for r in re.search(r\"LAYER_TABLE='(.*?)'\",T,re.S)[1].splitlines() if r.split()[0] in('zhuge_hi','hi_north','hi_east','hi_south')];S=json.load(open(f'data/{w}/steps.json'))['steps'];P=json.load(open(f'data/{w}/places.json'));n=C.Counter(s['places'][-1] for s in S);ms={s['milestone'].get('place',s['places'][-1]) for s in S if s.get('milestone')};inbox=lambda p:72<=p['lon']<=146 and 16<=p['lat']<=54;cov=lambda p:any(a<=p['lon']<=b and c<=p['lat']<=d for a,b,c,d in H);o=sorted(k for k in set(n)|ms if inbox(P[k]) and not cov(P[k]) and (k in ms or n[k]>=4));[print(k,P[k]['name'],P[k]['lon'],P[k]['lat'],'里程碑' if k in ms else '',n[k]) for k in o];print(len(o),'places outside shared hi-res layers')" <who>
 ```
 
 （已有六人的结果：诸葛亮泸水、李白碎叶、蒋介石东京各 1 处，蒋介石为此加载了 `hi_japan`。）落在 `hi_japan` 内的只需加 `extra_levels`；其余按 `references/schema.md` 的“需要新的高清地形层时”，用这些地点的外包范围（四周各留约 1°）生成一层，写进 `person.json` 的 `extra_levels`。原因：层外只剩 z9/z7 底图，里程碑近景会明显发糊。

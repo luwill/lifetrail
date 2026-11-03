@@ -1,13 +1,13 @@
 #!/bin/zsh
-# 准备共享地形缓存 ~/.cache/life-trajectory-video/terrain：
-#   设置了 LTV_TERRAIN_SEED（指向已有的地形目录）就复制成品层；否则下载生成（约 30–60 分钟）
+# 准备共享地形缓存 ~/.cache/lifetrail/terrain：
+#   设置了 LIFETRAIL_TERRAIN_SEED（指向已有的地形目录）就复制成品层；否则下载生成（约 30–60 分钟）
 #   一层只有存在完成标记 <层>.ok 才算完整；复制先写临时文件再 mv，生成失败会清掉半成品。
 # 用法：zsh setup_terrain.sh <项目目录>    （项目内 tools/ 提供 fetch_dem/fetch_imagery/make_texture）
 set -euo pipefail
 PROJ=${1:?usage: setup_terrain.sh <project-dir>}
 PROJ=${PROJ:A}
-CACHE=${LTV_TERRAIN_CACHE:-$HOME/.cache/life-trajectory-video/terrain}
-SEED=${LTV_TERRAIN_SEED:-}
+CACHE=${LIFETRAIL_TERRAIN_CACHE:-$HOME/.cache/lifetrail/terrain}
+SEED=${LIFETRAIL_TERRAIN_SEED:-}
 
 # 唯一的层清单：名称 经度0 经度1 纬度0 纬度1 缩放级 贴图宽 网格宽
 LAYER_TABLE='world 35 178 -8 70 5 2400 600
@@ -41,7 +41,7 @@ check_py() {
 
 gen_layer() {   # 名称 经度0 经度1 纬度0 纬度1 缩放级 贴图宽 网格宽
   local L=$1
-  echo "no seed for $L${SEED:+ at $SEED} — generating (≈ several minutes; set LTV_TERRAIN_SEED to reuse an existing terrain dir)"
+  echo "no seed for $L${SEED:+ at $SEED} — generating (≈ several minutes; set LIFETRAIL_TERRAIN_SEED to reuse an existing terrain dir)"
   check_py || exit 1
   if ( cd "$PROJ" && python3 tools/fetch_dem.py $L $2 $3 $4 $5 $6 $7 && python3 tools/fetch_imagery.py $L $6 \
        && python3 tools/make_texture.py $L $8 --sat ); then
