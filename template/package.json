@@ -1,0 +1,6 @@
+{
+  "name": "life-trajectory-project",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": { "three": "0.170.0", "playwright-core": "1.63.0" }
+}
